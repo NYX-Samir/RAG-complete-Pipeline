@@ -1,0 +1,10 @@
+langchain
+langchain-community
+chromadb
+python-docx
+pypdf
+sentence-transformers
+rank-bm25
+accelerate
+cohere
+tiktoken
