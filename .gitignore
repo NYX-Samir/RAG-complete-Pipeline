@@ -12,3 +12,9 @@ wheels/
 #Rough Used
 deploy.py
 Rough.py
+
+#data
+data
+
+#vectorDb
+chroma_db
