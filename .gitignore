@@ -14,7 +14,10 @@ deploy.py
 Rough.py
 
 #data
-data
+data/
 
 #vectorDb
-chroma_db
+chroma_db/
+
+#API
+.env
