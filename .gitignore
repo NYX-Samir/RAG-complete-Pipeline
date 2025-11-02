@@ -12,6 +12,7 @@ wheels/
 #Rough Used
 deploy.py
 Rough.py
+app.py
 
 #data
 data/
