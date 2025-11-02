@@ -1,5 +1,9 @@
 
-from langchain.document_loaders import (PyPDFLoader,TextLoader,Docx2txtLoader,DirectoryLoader,UnstructuredHTMLLoader,CSVLoader)
+from langchain_community.document_loaders import (
+    PyPDFLoader, TextLoader, Docx2txtLoader, DirectoryLoader,
+    UnstructuredHTMLLoader, CSVLoader
+)
+
 from typing import List,Dict,Tuple
 import re
 

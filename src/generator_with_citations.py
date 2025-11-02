@@ -1,5 +1,5 @@
 from typing import List
-
+from langchain_community.llms import Ollama
 
 class RAGGenerator:
     

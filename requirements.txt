@@ -5,6 +5,5 @@ python-docx
 pypdf
 sentence-transformers
 rank-bm25
-accelerate
-cohere
-tiktoken
+streamlit
+fast-api

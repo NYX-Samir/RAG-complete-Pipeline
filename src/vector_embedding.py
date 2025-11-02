@@ -1,5 +1,5 @@
 from sentence_transformers import SentenceTransformer
-from langchain.vectorstores import FAISS,Chroma
+from langchain_community.vectorstores import Chroma
 from langchain_community.embeddings import HuggingFaceEmbeddings
 import numpy as np
 
@@ -20,4 +20,4 @@ class Embeddings:
             persist_directory=persist_directory
         )
         return vectordb
-    
+

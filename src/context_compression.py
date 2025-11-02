@@ -1,7 +1,7 @@
 from langchain.schema import Document
 from typing import List
 
-class ContextCompression:
+class ContextCompressor:
     
     def __init__(self,llm):
         self.llm=llm
