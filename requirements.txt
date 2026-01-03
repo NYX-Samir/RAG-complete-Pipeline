@@ -1,9 +1,8 @@
-langchain
-langchain-community
-chromadb
-python-docx
-pypdf
-sentence-transformers
-rank-bm25
-streamlit
-fast-api
+langchain==0.3.27
+langchain-community== 0.3.27
+chromadb==1.1.1
+python-docx==1.2.0
+pypdf==6.1.2
+sentence-transformers==5.1.1
+rank-bm25==0.0.2
+streamlit==1.46.1
