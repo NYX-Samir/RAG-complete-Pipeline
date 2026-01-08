@@ -5,7 +5,7 @@ from src.vector_embedding  import Embeddings
 from src.query_transfromer import LocalQueryTransformer
 from src.generator_with_citations import RAGGenerator
 from src.chunking import Chunking
-from src.data_ingestion import DataIngestion
+from src.documents_ingestion import DataIngestion
 from src.context_compression import ContextCompressor
 from src.reranker import ReRanker
 from src.retrieval import HybridRetriever
