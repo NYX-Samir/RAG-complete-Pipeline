@@ -72,7 +72,7 @@ class chunking:
             current_length=0
             
             for i,sentence in enumerate(sentences):
-                sentence_len= len(sentences)
+                sentence_len= len(sentence)
                 current_chunk.append(sentence)
                 current_length +=sentence_len
                 
@@ -102,7 +102,7 @@ class chunking:
                     if chunk_text:
                         chunks.append(
                             Document(
-                                page_content=text,
+                                page_content=chunk_text,
                                 metadata=copy.deepcopy(doc.metadata)
                             )
                         )
