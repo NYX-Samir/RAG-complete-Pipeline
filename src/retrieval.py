@@ -1,49 +1,121 @@
 from rank_bm25 import BM25Okapi
-import numpy as np
+from langchain.schema import Document
+from typing import List,Tuple,Dict
+import numpy as np 
 
 class HybridRetriever:
     
-    def __init__(self,vectorstore,documents):
+    def __init__(self,vectorstore,documents:List[Document]):
+        
         self.vectorstore=vectorstore
         self.documents=documents
+        self._build_bm25(documents)
         
-        tokenized_docs=[doc.page_content.lower().split() for doc in documents]
+        print(f"Hybrid Retriever initialized with {len(documents)} documents")
+        
+    
+    @staticmethod
+    def _tokenize(text:str)->List[str]:
+        return text.lower().split()
+    
+    @staticmethod
+    def _doc_uid(doc:Document)->str:
+        
+        src=doc.metadata.get("source","unknown")
+        page=doc.metadata.get("page","na")
+        return f"{src}::page={page}::hash={hash(doc.page_content)}"
+    
+    
+    
+    @staticmethod
+    def _normalize(scores:np.ndarray)->np.ndarray:
+        if len(scores)==0:
+            return scores
+        
+        min_s,max_s=scores.min(),scores.max()
+        if max_s>min_s:
+            return (scores-min_s)/(max_s-min_s)
+        
+        return scores
+    
+    
+    def _build_bm25(self,documents:List[Document])->None:
+        tokenized_docs=[
+            self._tokenize(doc.page_content)
+            for doc in documents
+        ]
         self.bm25=BM25Okapi(tokenized_docs)
-        print(f"Hybrid Retriever ready with {len(documents)} documents")
         
         
-    def retrieve(self,query:str,k=10,alpha=0.5):
+    def refresh_documents(self,documents:List[Document])->None:
         
-        # Vector Search 
-        dense_results=self.vectorstore.similarity_search_with_score(query,k=k*2)
+        self.documents=documents
+        self._build_bm25(documents)
         
-        # BM25 Search
-        tokenized_query=query.lower().split()
-        bm25_scores=self.bm25.get_scores(tokenized_query)
         
-        #Normalized Scores between 0-1 
-        dense_scores=np.array([1/(1+score) for _,score in dense_results])
-        if dense_scores.max()>dense_scores.min():
-            dense_scores=(dense_scores-dense_scores.min())/(dense_scores.max()-dense_scores.min())
+    def retrieve(
+        self,
+        query:str,
+        k:int=10,
+        alpha:float=0.5,
+        bm25_k:int=50,
+    ) -> List[Tuple[Document, float]]:
+        
+        if not query or not query.strip():
+            return []
+        
+        # Dense retrieval
+        dense_results=self.vectorstore.similarity_search_with_score(
+            query,
+            k=k*2
+        )
+        
+        dense_docs= [doc for doc,_ in dense_results]
+        dense_distances=np.array([score for _,score in dense_results])
+        
+        dense_scores=1/(1 + dense_distances)
+        dense_scores=self._normalize(dense_scores)
+        
+        # BM25 retrieval (top-k only)
+        
+        tokenized_query= self._tokenize(query)
+        bm25_raw_score=self.bm25.get_scores(tokenized_query)
+        
+        top_bm25_idx=np.argsort(bm25_raw_score)[::-1][:bm25_k]
+        bm25_scores=bm25_raw_score[top_bm25_idx]
+        bm25_scores=self._normalize(bm25_scores)
+        
+        score_map: Dict[str, Dict] = {}
+        
+        for i,doc in enumerate(dense_docs):
+            uid=self._doc_uid(doc)
+            score_map[uid]={
+                "doc":doc,
+                "score":alpha*dense_scores[i]
+            }
             
-        if bm25_scores.max()>bm25_scores.min():
-            bm25_scores=(bm25_scores-bm25_scores.min())/(bm25_scores.max()-bm25_scores.min())
+        for rank,idx in enumerate(top_bm25_idx):
+            doc =self.documents[idx]
+            uid=self._doc_uid(doc)
             
-        doc_scores={}
-        # ADD dense scores
-        for i, (doc, _) in enumerate(dense_results):
-            doc_id=id(doc)
-            doc_scores[doc_id]={'doc':doc,'score':alpha*dense_scores[i]}
+            sparse_score=(1-alpha)*bm25_scores[rank]
             
-        #ADD Sparse scores
-        for i,doc in enumerate(self.documents):
-            doc_id=id(doc)
-            if doc_id in doc_scores:
-                doc_scores[doc_id]['score']+=(1-alpha)*bm25_scores[i]
+            if uid in score_map:
+                score_map[uid]["score"] += sparse_score
             else:
-                doc_scores[doc_id]={'doc':doc,'score':(1-alpha)*bm25_scores[i]}
+                score_map[uid]={
+                    "doc":doc,
+                    "score":sparse_score,
+                }
                 
-        # Sort by combined score 
-        sorted_docs=sorted(doc_scores.values(),key=lambda x:x['score'],reverse=True)[:k]
+                
+        ranked= sorted(
+            score_map.values(),
+            key=lambda x : (x["score"],x["doc"].page_content),
+            reverse=True,
+        )[:k]
         
-        return[(item['doc'],item['score']) for item in sorted_docs]
+        return [(item["doc"],float(item["score"])) for item in ranked]
+    
+    
+    

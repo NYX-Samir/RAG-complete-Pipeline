@@ -106,4 +106,4 @@ class chunking:
                                 metadata=copy.deepcopy(doc.metadata)
                             )
                         )
-            return chunks        
+            return chunks
