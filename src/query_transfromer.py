@@ -32,14 +32,14 @@ class QueryTransformer:
         
         
         prompt=f"""
-        Generate {num_queries} different versions of this question to retrieve relavant documents.
-        Only output the question ,one per line ,without numbering.
+Generate {num_queries} different versions of this question to retrieve relavant documents.
+Only output the question ,one per line ,without numbering.
 
-        Original_query Question:
-        {original_query}
+Original_query Question:
+{original_query}
 
-        Alternate Questions:
-        """.strip()
+Alternate Questions:
+""".strip()
         
         response =self.llm.invoke(prompt)
         text =str(response).strip()
@@ -63,13 +63,13 @@ class QueryTransformer:
         
         
         prompt=f"""
-        Write a concise ,factual answer to this question.
-        
-        Question :
-        {query}
-        
-        Answer:
-        """.strip()
+Write a concise ,factual answer to this question.
+
+Question :
+{query}
+
+Answer:
+""".strip()
         
         
         response=self.llm.invoke(prompt)
@@ -87,13 +87,13 @@ class QueryTransformer:
         
         
         prompt=f"""
-        Given this specific question ,generate a broader and more general question.
-        
-        Specific question:
-        {query}
-        
-        Broader question:
-        """.strip()
+Given this specific question ,generate a broader and more general question.
+
+Specific question:
+{query}
+
+Broader question:
+""".strip()
         
         
         response=self.llm.invoke(prompt)
