@@ -48,10 +48,10 @@ class ContextCompression:
 Extract only the sentences that directly answer or are relevant to the question below.
 If no sentence is relavant, output exactly:None.
 Do not add explainations or extra text.
-            
+
 Question:
 {query}
-            
+
 Document:
 {text[:self.max_chars]}
 Relevant sentences:
