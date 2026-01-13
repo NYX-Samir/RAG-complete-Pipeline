@@ -10,9 +10,8 @@ wheels/
 .venv
 
 #Rough Used
-deploy.py
-Rough.py
-try.py
+test_pipeline.py
+
 
 #data
 data/

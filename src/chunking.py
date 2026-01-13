@@ -1,5 +1,5 @@
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema import Document
+from langchain_core.documents import Document
 from sentence_transformers import SentenceTransformer
 from typing import List
 import numpy as np
@@ -7,13 +7,13 @@ import re
 import copy
 
 
-class chunking:
+class Chunking:
     
     
     @staticmethod
     def recursive_chunking(
         documents:List[Document],
-        chunk_size:int=100,
+        chunk_size:int=1000,
         chunk_overlap:int=200
     )->List[Document]:
         
@@ -106,4 +106,4 @@ class chunking:
                                 metadata=copy.deepcopy(doc.metadata)
                             )
                         )
-            return chunks
+        return chunks

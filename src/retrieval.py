@@ -1,5 +1,5 @@
 from rank_bm25 import BM25Okapi
-from langchain.schema import Document
+from langchain_core.documents import Document
 from typing import List,Tuple,Dict
 import numpy as np 
 

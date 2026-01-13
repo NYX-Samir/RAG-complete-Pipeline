@@ -4,7 +4,7 @@ from langchain_community.document_loaders import (
     UnstructuredHTMLLoader, CSVLoader
 )
 
-from langchain.schema import Document
+from langchain_core.documents import Document
 from typing import List
 from pathlib import Path
 import re
@@ -65,7 +65,8 @@ class DataIngestion:
         
         doc.metadata = {
             "source":str(source),
-            "filename":Path(source).name if source != "unknown" or "Unknown",
+            "filename":Path(source).name if source not in ("unknown","Unknown") 
+            else "unknown",
             "page":doc.metadata.get("page",None),
         }
 

@@ -1,5 +1,5 @@
 from typing import List,Union,Set,Tuple
-from langchain.schema import Document
+from langchain_core.documents import Document
 
 class RAGEvaluator:
     

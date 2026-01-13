@@ -1,5 +1,5 @@
 from sentence_transformers import CrossEncoder
-from langchain.schema import Document
+from langchain_core.documents import Document
 from typing import List,Tuple,Optional
 import torch
 
