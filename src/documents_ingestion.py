@@ -63,54 +63,62 @@ class DataIngestion:
             "unknown"
         )
         
+        path = Path(source)
+        
         doc.metadata = {
             "source":str(source),
             "filename":Path(source).name if source not in ("unknown","Unknown") 
             else "unknown",
             "page":doc.metadata.get("page","na"),
+            "domain":path.parent.name.lower()
         }
 
         return doc
     
     
+
     @classmethod
-    def ingest(cls,paths:List[str])->List[Document]:
-        
-        all_docs:List[Document]=[]
-        
-        for path in paths:
-            path_obj=Path(path)
-            
-            try:
-                if path_obj.is_dir():
-                    docs=cls.load_directory(str(path_obj))
-                    
-                    
-                else:
-                    
-                    suffix=path_obj.suffix.lower()
-                    
-                    if suffix ==".pdf":
-                        docs=cls.load_pdf(str(path_obj))
-                    elif suffix in [".txt"]:
-                        docs=cls.load_text(str(path_obj))
-                    elif suffix in [".html",".htm"]:
-                        docs=cls.load_html(str(path_obj))
-                    elif suffix in [".csv"]:
-                        docs=cls.load_csv(str(path_obj))
-                    elif suffix in [".docx"]:
-                        docs=cls.load_docx(str(path_obj))
-                    else:
-                        print(f"Skipping unsupported file: {path}")
+    def ingest(cls, paths: List[str]) -> List[Document]:
+        all_docs: List[Document] = []
+
+        for base_path in paths:
+            base = Path(base_path)
+
+            files = (
+                base.rglob("*") if base.is_dir() else [base]
+            )
+
+            for file_path in files:
+                try:
+                    if file_path.is_dir():
                         continue
-                   
-                for doc in docs:
-                    doc.page_content =cls.preprocess_text(doc.page_content)
-                    doc=cls.normalize_metadata(doc)
-                    all_docs.append(doc)
-                    
-            except Exception as e:
-                print(f"Failed to load path: {e}")
-                
-                
+
+                    suffix = file_path.suffix.lower()
+
+                    if suffix == ".pdf":
+                        docs = cls.load_pdf(str(file_path))
+                    elif suffix == ".txt":
+                        docs = cls.load_text(str(file_path))
+                    elif suffix in [".html", ".htm"]:
+                        docs = cls.load_html(str(file_path))
+                    elif suffix == ".csv":
+                        docs = cls.load_csv(str(file_path))
+                    elif suffix == ".docx":
+                        docs = cls.load_docx(str(file_path))
+                    else:
+                        continue
+
+                    for doc in docs:
+                        doc.page_content = cls.preprocess_text(doc.page_content)
+                        doc = cls.normalize_metadata(doc)
+                        all_docs.append(doc)
+
+                except Exception as e:
+                    print(f"[SKIP] {file_path} → {e}")
+
+        print(f"[INGEST] Loaded documents: {len(all_docs)}")
+
+        if not all_docs:
+            raise RuntimeError("No documents loaded. Check PDF dependencies.")
+
         return all_docs
