@@ -10,7 +10,7 @@ wheels/
 .venv
 
 #Rough Used
-test_pipeline.py
+test.py
 
 
 #data
