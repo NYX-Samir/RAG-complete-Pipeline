@@ -40,7 +40,7 @@ class DataIngestion:
         loader=DirectoryLoader(
             directory_path,
             glob_pattern,
-            show_progress=True
+            show_progress=True,
         )
         return loader.load()
     
@@ -50,9 +50,9 @@ class DataIngestion:
             return ""
         
         text=re.sub(r"\s"," ",text)
-        text=re.sub(r"[^\w\s\.\?\!\-\:\;]","",text)
+        
         return text.strip()
-    
+     
     
     @staticmethod
     def normalize_metadata(doc:Document)->Document:
@@ -67,7 +67,7 @@ class DataIngestion:
             "source":str(source),
             "filename":Path(source).name if source not in ("unknown","Unknown") 
             else "unknown",
-            "page":doc.metadata.get("page",None),
+            "page":doc.metadata.get("page","na"),
         }
 
         return doc
