@@ -1,7 +1,7 @@
 from fastapi import FastAPI,HTTPException
 from app.schemas import QueryRequest,QueryResponse
 from typing import Optional
-from src.pipeline import RAGPipeline
+from src.rag_pipeline import RAGPipeline
 import time
 from app.logger import get_logger
 from dotenv import load_dotenv

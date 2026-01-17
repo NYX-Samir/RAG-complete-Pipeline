@@ -214,3 +214,16 @@ class RAGPipeline:
         )
 
         return answer
+
+    
+    def retrieve_for_evaluation(self, query: str, k: int):
+    
+        retrieved = self.retriever.retrieve(query, k=20)
+
+        docs = [doc for doc, _ in retrieved]
+        
+        if self.enable_rerank and self.reranker:
+            reranked = self.reranker.rerank(query, docs, top_n=k)
+            return reranked
+
+        return retrieved[:k]

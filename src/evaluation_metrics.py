@@ -1,5 +1,8 @@
 from typing import List,Union,Set,Tuple
 from langchain_core.documents import Document
+import hashlib
+
+
 
 class RAGEvaluator:
     
@@ -18,15 +21,21 @@ class RAGEvaluator:
                 
         return docs
     
-    
-    
     @staticmethod
-    def _doc_uid(doc:Document)->str:
+    def _content_hash(text:str)->str:
+        
+        return hashlib.md5(text.encode("utf-8")).hexdigest()
+    
+    
+    
+    @classmethod
+    def _doc_uid(cls,doc:Document)->str:
        
        src =doc.metadata.get("source","Unknown")
        page=doc.metadata.get("page","na")
+       content_hash=cls._content_hash(doc.page_content)
        
-       return f"{src}::page={page}::hash={hash(doc.page_content)}"
+       return f"{src}::page={page}::hash={content_hash}"
    
    
    
