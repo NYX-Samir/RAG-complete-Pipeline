@@ -46,7 +46,6 @@ class EmbeddingStore:
         return valid
 
 
-
     def create_or_load_db(
         self,
         chunks: List[Document],
@@ -55,39 +54,31 @@ class EmbeddingStore:
         rebuild: bool = False,
     ) -> Chroma:
 
-        os.makedirs(persist_directory, exist_ok=True)
         chunks = self.validate_chunks(chunks)
-
         db_exists = os.path.exists(persist_directory) and os.listdir(persist_directory)
 
 
         if rebuild and db_exists:
             print("Rebuilding vector database...")
             shutil.rmtree(persist_directory)
-            os.makedirs(persist_directory, exist_ok=True)
             db_exists = False
 
 
         if db_exists:
             print("Loading existing Chroma database...")
-            vectordb = Chroma(
+            return Chroma(
                 persist_directory=persist_directory,
                 embedding_function=self.embeddings,
                 collection_name=collection_name,
             )
 
-            print(f"Adding {len(chunks)} new documents...")
-            vectordb.add_documents(chunks)
-            vectordb.persist()
 
-        else:
-            print("Creating new Chroma database...")
-            vectordb = Chroma.from_documents(
-                documents=chunks,
-                embedding=self.embeddings,
-                persist_directory=persist_directory,
-                collection_name=collection_name,
-            )
-            vectordb.persist()
+        print("Creating new Chroma database...")
+        vectordb = Chroma.from_documents(
+            documents=chunks,
+            embedding=self.embeddings,
+            persist_directory=persist_directory,
+            collection_name=collection_name,
+        )
 
         return vectordb
