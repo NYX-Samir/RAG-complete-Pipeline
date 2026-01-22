@@ -9,9 +9,6 @@ wheels/
 # Virtual environments
 .venv
 
-#Rough Used
-test.py
-
 
 #data
 data/
