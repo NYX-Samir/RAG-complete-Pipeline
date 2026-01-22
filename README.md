@@ -143,6 +143,14 @@ This project is intended to:
 
 It is not positioned as a large-scale production system, but as a strong foundation for applied AI engineering.
 
+## Further Reading
+
+For a detailed explanation of the design decisions, trade-offs, and evaluation methodology behind this RAG system, see the technical article:
+
+**Designing a Production-Grade RAG Pipeline From Ingestion to Evaluation**  
+https://medium.com/@nyx0samir/designing-a-production-grade-rag-pipeline-from-ingestion-to-evaluation-cea50ff94130
+
 ## License
 
 Open for learning, experimentation, and personal projects.
+
